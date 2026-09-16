@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "planar-linkage"
+version = "0.1.0"
+description = "Kinematics and quasi-static transmission of an actuator-driven planar four-bar"
+requires-python = ">=3.10"
+dependencies = [
+    "matplotlib>=3.10.9",
+    "numpy>=1.23",
+]
+
+[tool.setuptools.packages.find]
+include = ["planar_linkage*"]
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["win-64"]
+
+[tool.pixi.pypi-dependencies]
+planar-linkage = { path = ".", editable = true }
+
+[tool.pixi.tasks]
