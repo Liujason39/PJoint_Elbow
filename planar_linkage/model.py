@@ -43,17 +43,17 @@ def _intersection(P, Q, radius_p, radius_q, branch, tol):
     return P+x*e+branch*np.sqrt(max(0., h2))*np.array([-e[1], e[0]])
 
 
-@dataclass(frozen=True)
+@dataclass()
 class State:
     '''default as zero point of the p-joint elbow'''
-    s: float = 0.21002
+    s: float 
     angles: np.ndarray  # theta2, theta3, theta4
     A: np.ndarray
     B: np.ndarray
     branches: tuple[int, int]
 
 
-@dataclass(frozen=True)
+@dataclass()
 class Mechanism:
     """O2=(0,0), O4=(d,0), O1=(u,v); a=O2A, b=AB, c=O4B.
 
@@ -62,10 +62,10 @@ class Mechanism:
     """
     a: float = 0.048
     b: float = 0.0195
-    c: float
-    d: float
-    u: float
-    v: float
+    c: float = 0.03
+    d: float = 0.02136
+    u: float = -0.05394
+    v: float = 0.24036
     tolerance: float = 1e-12
     singularity_tolerance: float = 1e-10
 
@@ -79,7 +79,7 @@ class Mechanism:
         if np.hypot(self.u, self.v) == 0:
             raise GeometryError("O1 must differ from O2")
 
-    def position(self, s, branches=(1, 1)):
+    def position(self, s, branches=(-1, 1)):
         """Circle branches: A relative to O2->O1, B relative to A->O4.
 
         +1 means left of the directed line. These are NOT crossed/open
@@ -127,12 +127,12 @@ class Mechanism:
             raise SingularityError("Singular/near-singular configuration; change coordinates or analyze the constraint directly")
         return np.linalg.solve(scaled, np.asarray(rhs)/scales)
 
-    def jacobian(self, s, branches=(1, 1)):
+    def jacobian(self, s, branches=(-1, 1)):
         """Returns (3,) d(theta2,theta3,theta4)/ds."""
         state = self.position(s, branches)
         return self._solve(state, [2*s, 0, 0])
 
-    def motion(self, s, s_dot=0., s_ddot=0., branches=(1, 1)):
+    def motion(self, s, s_dot=0., s_ddot=0., branches=(-1, 1)):
         """Returns state, angular velocity (3,), angular acceleration (3,)."""
         _finite(s_dot, s_ddot)
         state = self.position(s, branches)
@@ -144,7 +144,7 @@ class Mechanism:
         alpha = self._solve(state, np.r_[2*(s_dot*s_dot+s*s_ddot)-curvature, radial])
         return state, w, alpha
 
-    def point_jacobian(self, s, point="B", branches=(1, 1)):
+    def point_jacobian(self, s, point="B", branches=(-1, 1)):
         """Returns (2,) d(x,y)/ds for A or B."""
         state = self.position(s, branches)
         J = self.jacobian(s, branches)
@@ -154,7 +154,7 @@ class Mechanism:
             return self.c*_normal(state.angles[2])*J[2]
         raise ValueError("point must be A or B")
 
-    def point_motion(self, s, s_dot=0., s_ddot=0., point="B", branches=(1, 1)):
+    def point_motion(self, s, s_dot=0., s_ddot=0., point="B", branches=(-1, 1)):
         """Returns position, velocity, acceleration, each shape (2,)."""
         state, w, alpha = self.motion(s, s_dot, s_ddot, branches)
         if point == "A":
@@ -167,7 +167,7 @@ class Mechanism:
         return p, length*_normal(t)*w[i], length*(_normal(t)*alpha[i]-_unit(t)*w[i]**2)
 
     def input_force(self, s, *, torques=(0.,0.,0.), force_A=(0.,0.),
-                    force_B=(0.,0.), branches=(1,1)):
+                    force_B=(0.,0.), branches=(-1, 1)):
         """Required actuator force, positive extending s.
 
         Loads are external forces ON the mechanism and CCW external link
