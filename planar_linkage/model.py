@@ -181,3 +181,161 @@ class Mechanism:
         return float(-(self.jacobian(s, branches)@tau
                        +self.point_jacobian(s, "A", branches)@fa
                        +self.point_jacobian(s, "B", branches)@fb))
+
+    def output_torque(
+        self, s, actuator_force,
+        branches=(-1, 1), *, j_tol=1e-8
+    ):
+        """output torque of O4->B from force of s"""
+        _finite(actuator_force, j_tol)
+        if j_tol <= 0:
+            raise ValueError("j_tol must be positive")
+
+        J4s = self.jacobian(s, branches=branches)[2]
+
+        if abs(J4s) <= j_tol:
+            raise SingularityError(
+                "Cannot infer output torque by dividing by J4s near zero"
+            )
+
+        return float(actuator_force / J4s)
+
+    def inverse_position(self, theta4, s_limits=None):
+        """use \theta_4 [rad] to get possible solution
+
+        s_limits: (s_min, s_max), optional
+        return list[State]；as possible solution.
+        unavailable case will return GeometryError.
+        """
+        _finite(theta4)
+
+        if s_limits is not None:
+            s_min, s_max = s_limits
+            _finite(s_min, s_max)
+            if s_min < 0 or s_max < s_min:
+                raise ValueError("Require 0 <= s_min <= s_max")
+
+        O1 = np.array([self.u, self.v], dtype=float)
+        O2 = np.zeros(2)
+        O4 = np.array([self.d, 0.])
+
+        # 1. get B coordinate
+        B = O4 + self.c * _unit(theta4)
+
+        # 2. check if O2、B's circle will intersect 
+        L = np.linalg.norm(B - O2)
+        scale = max(self.a, self.b, L)
+        eps = self.tolerance * scale
+
+        if L > self.a + self.b + eps:
+            return []
+        if L < abs(self.a - self.b) - eps:
+            return []
+
+        # cross product for checking point at which side 
+        def cross2(p, q):
+            return p[0] * q[1] - p[1] * q[0]
+
+        solutions = []
+
+        for inverse_branch in (1, -1):
+            A = _intersection(
+                O2, B,
+                self.a, self.b,
+                inverse_branch,
+                self.tolerance
+            )
+
+            # 3. get s length
+            s = float(np.linalg.norm(A - O1))
+
+            if s <= 0:
+                continue
+
+            if s_limits is not None:
+                if not s_min <= s <= s_max:
+                    continue
+
+            # A might be 2 solutions, so check the validity
+            if any(np.linalg.norm(A - st.A) <= eps
+                for st in solutions):
+                continue
+
+            theta2 = np.arctan2(A[1], A[0])
+            theta3 = np.arctan2(B[1] - A[1], B[0] - A[0])
+
+            theta4_wrapped = np.arctan2(
+                B[1] - O4[1], B[0] - O4[0]
+            )
+
+            # 4. show all possible branches
+            # A locate at which side of O2->O1
+            branch_A = (
+                1 if cross2(O1 - O2, A - O2) >= 0 else -1
+            )
+
+            # B locate at which side of A->O4
+            branch_B = (
+                1 if cross2(O4 - A, B - A) >= 0 else -1
+            )
+
+            # should use branches=(-1, 1)
+            solutions.append(
+                State(
+                    s=s,
+                    angles=np.array([
+                        theta2, theta3, theta4_wrapped
+                    ]),
+                    A=A.copy(),
+                    B=B.copy(),
+                    branches=(branch_A, branch_B)
+                )
+            )
+
+        return solutions
+
+    def inverse_angular_velocity(self, s, target_omega4 = 0, branches=(-1,1)):
+        """retrun \\dot{s} for target \\dot{\\omega4} at s and branch"""
+        J4s = self.jacobian(s, branches=branches)[2]
+        s_dot = target_omega4 / J4s
+        return s_dot
+
+    def inverse_motion(
+        self, state, omega4, alpha4, *, j_tol=1e-8
+    ):
+        """Given omega4, alpha4 to get s_dot、s_ddot。
+
+        state: inverse_position() 's one of solution。
+        j_tol: rad/m。
+        """
+        _finite(omega4, alpha4, j_tol)
+        if j_tol <= 0:
+            raise ValueError("j_tol must be positive")
+
+        s = state.s
+        branches = state.branches
+
+        J4s = self.jacobian(s, branches=branches)[2]
+
+        if abs(J4s) <= j_tol:
+            raise SingularityError(
+                "Cannot uniquely invert output motion near J4s = 0"
+            )
+
+        # inverse velocity
+        
+        s_dot = self.inverse_angular_velocity(s, target_omega4 = omega4, branches=branches)
+
+        # compute when s_ddot=0, acceleration from geometry and omega
+        _, _, alpha_bias = self.motion(
+            s,
+            s_dot=s_dot,
+            s_ddot=0.0,
+            branches=branches
+        )
+
+        # 逆加速度
+        s_ddot = (alpha4 - alpha_bias[2]) / J4s
+
+        return float(s_dot), float(s_ddot)
+
