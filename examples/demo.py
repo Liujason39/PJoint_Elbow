@@ -2,7 +2,8 @@
 from planar_linkage import Mechanism
 import numpy as np
 
-m = Mechanism(a=0.048, b=0.0195, c=0.030, d=0.02136, u=-0.05394, v=0.24036)
+# m = Mechanism(a=0.048, b=0.0195, c=0.030, d=0.02136, u=-0.05394, v=0.24036)
+m = Mechanism() # or use default
 s = 0.211
 state, omega, alpha = m.motion(s, s_dot=0.02, s_ddot=0.005)
 print('A, B [m]:', state.A, state.B)

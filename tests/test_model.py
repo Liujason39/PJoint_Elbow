@@ -6,6 +6,7 @@ from planar_linkage import Mechanism, GeometryError, SingularityError
 def angle_delta(a, b):
     return np.arctan2(np.sin(a-b), np.cos(a-b))
 
+# below are use to check validity of solution 
 
 class Verification(unittest.TestCase):
     def setUp(self):
