@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: planar-linkage
-Version: 0.1.0
+Version: 0.3.0
 Summary: Kinematics and quasi-static transmission of an actuator-driven planar four-bar
 Requires-Python: >=3.10
 Requires-Dist: matplotlib>=3.10.9

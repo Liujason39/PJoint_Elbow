@@ -4,7 +4,8 @@ import numpy as np
 
 # m = Mechanism(a=0.048, b=0.0195, c=0.030, d=0.02136, u=-0.05394, v=0.24036)
 m = Mechanism() # or use default
-s = 0.240
+s = 0.26948 # initial pose = 0.21002
+"""the elbow is turn 69.379 in world coordinate"""
 
 # Forward kinematics
 state, omega, alpha = m.motion(s, s_dot=0.02, s_ddot=0.005)
@@ -17,7 +18,7 @@ print('B position Jacobian:', m.point_jacobian(s))
 print('required actuator force [N]:', m.input_force(s, force_B=(0., -100.)))
 
 # Inverse Kinematics
-target_theta4 = np.deg2rad(5.95623117)
+target_theta4 = np.deg2rad(-59.64780866)
 
 solutions = m.inverse_position(target_theta4)
 
