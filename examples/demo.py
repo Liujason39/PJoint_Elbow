@@ -1,5 +1,5 @@
 """Run from project root: python examples/demo.py """
-from planar_linkage import Mechanism
+from PJointElbow_linkage import Mechanism
 import numpy as np
 
 # m = Mechanism(a=0.048, b=0.0195, c=0.030, d=0.02136, u=-0.05394, v=0.24036)

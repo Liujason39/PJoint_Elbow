@@ -1,6 +1,6 @@
 import unittest
 import numpy as np
-from planar_linkage import Mechanism, GeometryError, SingularityError
+from PJointElbow_linkage import Mechanism, GeometryError, SingularityError
 
 
 def angle_delta(a, b):
