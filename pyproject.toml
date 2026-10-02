@@ -13,7 +13,7 @@ dependencies = [
 ]
 
 [tool.setuptools.packages.find]
-include = ["planar_linkage*"]
+include = ["PJointElbow_linkage*"]
 
 [tool.pixi.workspace]
 channels = ["conda-forge"]

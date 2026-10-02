@@ -133,3 +133,11 @@ f = -(J dot torques + JA dot force_A + JB dot force_B)
 Jacobian 中央差分與位置二階時間差分；另測試外力/扭矩的虛功率平衡、
 單位縮放、不可達輸入、三角形死點與四連桿死點。
 數值差分使用角度環繞處理，避免 atan2 的 ±pi 跳變。
+
+## 運動學可算的最大最小值
+
+| Direction from zero | Maximum displacement |
+|---|---:|
+| Extension (`s = s₀ - displacement`) | **24.858 mm** |
+| Retraction (`s = s₀ + displacement`) | **67.094 mm** |
+| Total reachable stroke | **91.952 mm** |

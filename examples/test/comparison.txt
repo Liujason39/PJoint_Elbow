@@ -1,0 +1,22 @@
+s = 0.26948 + (+1) * displacement_mm / 1000 [m]
+branches = (-1, 1); joint_4 = degrees(state.angles[2])
+World-frame joint_4 at zero displacement: -59.647809 deg
+Relative = joint_4 minus its zero-displacement angle, wrapped to [-180, 180).
+Errors = calculated minus measured [deg]; no acceptance tolerance specified.
+
+| Point | Displacement (mm) | s (m) | Measured (deg) | Raw (deg) | Raw error (deg) | Relative (deg) | Relative error (deg) | Status |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | :--- |
+| 1 | 0.00 | 0.26948 | 0.00 | -59.6478 | -59.6478 | 0.0000 | +0.0000 | Reachable |
+| 2 | 8.15 | 0.27763 | -19.95 | -78.9334 | -58.9834 | -19.2856 | +0.6644 | Reachable |
+| 3 | 17.85 | 0.28733 | -40.02 | -100.7146 | -60.6946 | -41.0667 | -1.0467 | Reachable |
+| 4 | 27.95 | 0.29743 | -60.00 | N/A | N/A | N/A | N/A | Unreachable: Circles do not intersect: unreachable configuration |
+| 5 | 37.70 | 0.30718 | -79.96 | N/A | N/A | N/A | N/A | Unreachable: Circles do not intersect: unreachable configuration |
+| 6 | 46.85 | 0.31633 | -100.02 | N/A | N/A | N/A | N/A | Unreachable: Circles do not intersect: unreachable configuration |
+| 7 | 55.40 | 0.32488 | -119.97 | N/A | N/A | N/A | N/A | Unreachable: Circles do not intersect: unreachable configuration |
+| 8 | 63.80 | 0.33328 | -140.00 | N/A | N/A | N/A | N/A | Unreachable: Circles do not intersect: unreachable configuration |
+| 9 | 72.45 | 0.34193 | -159.99 | N/A | N/A | N/A | N/A | Unreachable: Circles do not intersect: unreachable configuration |
+| 10 | 77.00 | 0.34648 | -170.04 | N/A | N/A | N/A | N/A | Unreachable: Circles do not intersect: unreachable configuration |
+
+Reachable: 3/10
+Raw (reachable points only): RMSE = 59.7794 deg; max absolute error = 60.6946 deg
+Relative (reachable points only): RMSE = 0.7158 deg; max absolute error = 1.0467 deg

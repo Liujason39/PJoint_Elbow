@@ -1,0 +1,22 @@
+s = 0.26948 + (-1) * displacement_mm / 1000 [m]
+branches = (-1, 1); joint_4 = degrees(state.angles[2])
+World-frame joint_4 at zero displacement: -59.647809 deg
+Relative = joint_4 minus its zero-displacement angle, wrapped to [-180, 180).
+Errors = calculated minus measured [deg]; no acceptance tolerance specified.
+
+| Point | Displacement (mm) | s (m) | Measured (deg) | Raw (deg) | Raw error (deg) | Relative (deg) | Relative error (deg) | Status |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | :--- |
+| 1 | 0.00 | 0.26948 | 0.00 | -59.6478 | -59.6478 | 0.0000 | +0.0000 | Reachable |
+| 2 | 8.15 | 0.26133 | -19.95 | -40.2965 | -20.3465 | 19.3513 | +39.3013 | Reachable |
+| 3 | 17.85 | 0.25163 | -40.02 | -18.3320 | +21.6880 | 41.3158 | +81.3358 | Reachable |
+| 4 | 27.95 | 0.24153 | -60.00 | 2.8672 | +62.8672 | 62.5150 | +122.5150 | Reachable |
+| 5 | 37.70 | 0.23178 | -79.96 | 22.2668 | +102.2268 | 81.9146 | +161.8746 | Reachable |
+| 6 | 46.85 | 0.22263 | -100.02 | 40.5946 | +140.6146 | 100.2424 | +200.2624 | Reachable |
+| 7 | 55.40 | 0.21408 | -119.97 | 59.4575 | +179.4275 | 119.1053 | +239.0753 | Reachable |
+| 8 | 63.80 | 0.20568 | -140.00 | 84.2587 | +224.2587 | 143.9065 | +283.9065 | Reachable |
+| 9 | 72.45 | 0.19703 | -159.99 | N/A | N/A | N/A | N/A | Unreachable: Circles do not intersect: unreachable configuration |
+| 10 | 77.00 | 0.19248 | -170.04 | N/A | N/A | N/A | N/A | Unreachable: Circles do not intersect: unreachable configuration |
+
+Reachable: 8/10
+Raw (reachable points only): RMSE = 123.0363 deg; max absolute error = 224.2587 deg
+Relative (reachable points only): RMSE = 168.5372 deg; max absolute error = 283.9065 deg
