@@ -9,8 +9,8 @@ Python >= 3.10；唯一執行期相依套件為 NumPy。
 定長桿 O2A=a、AB=b、O4B=c；輸入 s=|O1A|。
 O1A 是兩端可轉動的伸縮致動器，不是方向固定的滑軌。
 A 為致動器、O2A、AB 共用的轉動接點；B 為 AB、O4B 的轉動接點。
-所有桿為剛體，機構為平面模型。交叉處不新增接點。
-
+所有桿為剛體，機構為平面模型。
+可看 "illus_p_elbow.drawio.pdf"
 angles、omega、alpha 的順序固定為 theta2、theta3、theta4，
 分別是 O2→A、A→B、O4→B 相對 +x 的逆時針角度。
 角度用 rad。建議長度 m、時間 s、力 N、扭矩 N m；也可採其他一致單位。
@@ -22,33 +22,12 @@ s 是兩鉸點之間的完整長度，不是相對行程；若輸入行程 x，�
 
 ```bash
 python -m pip install .
-python -m unittest discover -s tests -v
 python examples/demo.py
-```
-
-離線且已裝 NumPy / setuptools / wheel 時，可用：
-
-```bash
-python -m pip install --no-build-isolation --no-deps .
 ```
 
 ## 使用
 
-```python
-from planar_linkage import Mechanism
-
-m = Mechanism(a=1.0, b=2.0, c=1.8, d=2.2, u=-0.8, v=0.3)
-s = 1.2
-branches = (1, 1)
-state, omega, alpha = m.motion(s, s_dot=0.02, s_ddot=0.005,
-                                branches=branches)
-print(state.A, state.B, state.angles)
-print(omega, alpha)
-J = m.jacobian(s, branches)       # shape (3,), d angles / ds
-JB = m.point_jacobian(s, 'B', branches)  # shape (2,), d B / ds
-p, velocity, acceleration = m.point_motion(s, 0.02, 0.005, 'B', branches)
-f = m.input_force(s, force_B=(0, -100), branches=branches)
-```
+look at examples/demo.py
 
 以上尺寸僅為可運動的示例，請替換成實際尺寸。
 

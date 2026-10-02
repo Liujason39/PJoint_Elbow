@@ -3,11 +3,16 @@ from PJointElbow_linkage import Mechanism
 import numpy as np
 
 # m = Mechanism(a=0.048, b=0.0195, c=0.030, d=0.02136, u=-0.05394, v=0.24036)
-m = Mechanism() # or use default
+# or use default, as the real robot is designed
+m = Mechanism() 
+
+# demo s = S_0 + ds, s_dot & s_ddot are optional, default to 0
 s = 0.26948 # initial pose = 0.21002
-"""the elbow is turn 69.379 in world coordinate"""
 
 # Forward kinematics
+"""after give s, s_dot, s_ddot, we can get the state, angular velocity and angular acceleration
+   motion(..., branches=(-1, 1)), default branch as real frame 
+"""
 state, omega, alpha = m.motion(s, s_dot=0.02, s_ddot=0.005)
 print('A, B [m]:', state.A, state.B)
 print('angles [deg]:', np.rad2deg(state.angles))
@@ -22,18 +27,19 @@ target_theta4 = np.deg2rad(-59.64780866)
 
 solutions = m.inverse_position(target_theta4)
 
+# use the solutions.branches = (-1, 1)
 for i, sol in enumerate(solutions):
     # only choose realitic branch
     if sol.branches != (-1,1):
         continue
-    print(f"解 {i + 1}")
+    print(f"sol {i + 1}")
     print("s =", sol.s)
     print("A =", sol.A)
     print("B =", sol.B)
     # we should use the branches = (-1, 1)
     print("branches =", sol.branches)
 
-    # 再做一次正運動學，確認回到同一位置
+    # to check the forward kinematics, we can use the sol.s and sol.branches to get the position
     check = m.position(sol.s, branches=sol.branches)
 
     np.testing.assert_allclose(
@@ -43,13 +49,13 @@ for i, sol in enumerate(solutions):
         check.B, sol.B, rtol=1e-8, atol=1e-10
     )
 
-    # for inverse angular velocity
+    # for inverse angular velocity (example: s_dot = -0.70199 rad/s)
     target_omega4 = -0.70199  # rad/s
     s_dot = m.inverse_angular_velocity(sol.s, target_omega4)
 
     print("\\dot{s} =",s_dot)
 
-    # inverse alpha4
+    # for inverse angular acceleration (example: s_dot = -0.70199 rad/s, s_ddot = 0.2 rad/s²)
     omega4_target = -0.70199   # rad/s
     alpha4_target = 0.2   # rad/s²
     s_dot, s_ddot = m.inverse_motion(
@@ -67,4 +73,4 @@ for i, sol in enumerate(solutions):
 
 
 if not solutions:
-    print("指定角度無可行逆解")
+    print("no solution found for target_theta4 =", np.rad2deg(target_theta4))
